@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../generated/prisma_client"
+}
+
+model Settings {
+  id        Int @id @default(autoincrement())
+
+  name      String //  maxInstallments
+  value     String? //  12x
+  jsonValue Json? //  { 'maxInstallments' : 12, 'minInstallments': 4}
+
+  @@map("settings")
+}
+
+model Fails {
+  id        Int @id @default(autoincrement())
+
+  type      String @default("runtime") // api, docker, git, runtime
+
+  name      String @default("UnknownError") // the error name
+  message   String? // the error message
+  data      Json? // the data object
+  error     Json? // the error object
+  status    String? @default("new") // new, resolved, solved
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("fails")
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////// START DATABASE HERE ////////////////////////////////////////
+
+model Roles {
+  id                String @id @default(cuid())
+
+  name              String
+  level             Int // 1 = super adm // 100 = adm // 200 = client // guest = 300
+
+  users             Users[]
+  storeUsers        StoreUsers[]
+
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  @@map("roles")
+}
+
+model Users {
+  id                String @id @default(cuid())
+
+  role              Roles @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId            String
+
+  name              String
+  email             String @unique
+  password          String
+  active            Boolean @default(true)
+  code              String?
+  verifiedEmail     Boolean @default(false)
+
+  storeUsers        StoreUsers[]
+
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  @@map("users")
+}
+
+model Stores {
+  id                String @id @default(cuid())
+
+  name              String
+  email             String @unique
+  password          String
+  role              Int // 100 = adm // 200 = supervisor // 300 teammate
+  status            Boolean @default(true)
+
+  storeUsers        StoreUsers[]
+
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  @@map("stores")
+}
+
+model StoreUsers {
+  id                String @id @default(cuid())
+
+  store             Stores @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId           String
+
+  user              Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+
+  role              Roles @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId            String
+
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  @@map("storeUsers")
+}

@@ -1,0 +1,33 @@
+{
+  "name": "sevice-bot",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Garren",
+  "main": "dist/server.js",
+  "scripts": {
+    "watch": "tsc --watch",
+    "dev": "tsx watch --env-file=.env src/server.ts",
+    "start": "node --env-file=.env ./dist/server.js",
+    "build": "rm -rf ./dist/ && npx tsc --project tsconfig.json",
+    
+    "db:deploy": "npx prisma migrate deploy && npx prisma generate",
+    "db:start": "docker compose -f docker-compose.yml up -d service-bot-db",
+    "db:stop": "docker compose stop service-bot-db"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.3.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^7.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "prisma": {
+    "schema": "./prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3"
+  }
+}

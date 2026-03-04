@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        
+    </head>
+    <body>
+
+        <p>contador:</p>
+        <p id="valor">1</p>
+        <button onclick="test()">cotacao</button>
+
+    </body>
+    <script>
+
+        async function test() {
+
+            const element = document.querySelector('#valor')
+
+            const request = await fetch("https://economia.awesomeapi.com.br/last/USD-BRL")
+
+            const response = await request.json()
+
+            element.innerHTML = response.USDBRL.ask
+
+            // console.log(response.USDBRL.ask)
+
+        }
+
+        test()
+
+
+
+
+    </script>
+
+</html>

@@ -1,0 +1,43 @@
+
+services:
+  service-bot-db:
+    image: postgres:16-alpine
+    hostname: service-bot-db
+    container_name: service-bot-db
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: prisma
+    ports:
+      - '5432:5432'
+    networks:
+      - service-bot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+
+  service-bot:
+    build: "./"
+    container_name: service-bot
+    ports:
+      - '3000:3000'  # porta da API
+    stdin_open: true
+    tty: true  # Keeps the container running for debugging
+    depends_on:
+      service-bot-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - service-bot-network
+    volumes:
+      # - .:/src
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  service-bot-network:
+    name: service-bot-network
+    
